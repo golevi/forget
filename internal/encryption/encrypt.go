@@ -4,9 +4,9 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"github.com/golevi/forget/internal/encoding"
-	"github.com/golevi/forget/internal/key"
 	"io"
+
+	"github.com/golevi/forget/internal/encoding"
 )
 
 const (
@@ -14,13 +14,15 @@ const (
 	nonceSize    = 12
 )
 
-func Encrypt(password, plaintext string) (string, string, string, error) {
+type Keyer func(password, salt string) ([]byte, error)
+
+func Encrypt(password, plaintext string, key Keyer) (string, string, string, error) {
 	salt, err := randomBytes(saltByteSize)
 	if err != nil {
 		return "", "", "", err
 	}
 
-	cipherKey, err := key.Create(password, encoding.Encode(salt))
+	cipherKey, err := key(password, encoding.Encode(salt))
 	if err != nil {
 		return "", "", "", err
 	}

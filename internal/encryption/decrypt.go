@@ -3,12 +3,12 @@ package encryption
 import (
 	"crypto/aes"
 	"crypto/cipher"
+
 	"github.com/golevi/forget/internal/encoding"
-	"github.com/golevi/forget/internal/key"
 )
 
-func Decrypt(password, salt, nonce, ciphertext string) (string, error) {
-	cipherKey, err := key.Create(password, salt)
+func Decrypt(password, salt, nonce, ciphertext string, key Keyer) (string, error) {
+	cipherKey, err := key(password, salt)
 	if err != nil {
 		return "", err
 	}

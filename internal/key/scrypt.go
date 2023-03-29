@@ -6,17 +6,16 @@ import (
 )
 
 const (
-	N      = 1 << 15
-	r      = 8
-	p      = 1
-	keyLen = 32
+	scryptN = 1 << 15
+	scryptR = 8
+	scryptP = 1
 )
 
-func Create(password, salt string) ([]byte, error) {
+func Scrypt(password, salt string) ([]byte, error) {
 	byteSalt, err := encoding.Decode(salt)
 	if err != nil {
 		return []byte{}, nil
 	}
 
-	return scrypt.Key([]byte(password), byteSalt, N, r, p, keyLen)
+	return scrypt.Key([]byte(password), byteSalt, scryptN, scryptR, scryptP, keyLen)
 }
