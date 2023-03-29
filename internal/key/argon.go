@@ -17,5 +17,5 @@ func Argon(password, salt string) ([]byte, error) {
 		return []byte{}, nil
 	}
 
-	return argon2.Key([]byte(password), byteSalt, argonTime, argonMemory, argonThreads, keyLen), nil
+	return argon2.IDKey([]byte(password), byteSalt, argonTime, argonMemory, argonThreads, keyLen), nil
 }
