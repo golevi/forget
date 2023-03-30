@@ -1,7 +1,6 @@
 package key
 
 import (
-	"github.com/golevi/forget/internal/encoding"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -11,11 +10,6 @@ const (
 	argonThreads = 4
 )
 
-func Argon(password, salt string) ([]byte, error) {
-	byteSalt, err := encoding.Decode(salt)
-	if err != nil {
-		return []byte{}, nil
-	}
-
-	return argon2.IDKey([]byte(password), byteSalt, argonTime, argonMemory, argonThreads, keyLen), nil
+func Argon(password, salt []byte) ([]byte, error) {
+	return argon2.IDKey(password, salt, argonTime, argonMemory, argonThreads, keyLen), nil
 }

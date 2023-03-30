@@ -5,8 +5,6 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"io"
-
-	"github.com/golevi/forget/internal/encoding"
 )
 
 const (
@@ -14,37 +12,37 @@ const (
 	nonceSize    = 12
 )
 
-type Keyer func(password, salt string) ([]byte, error)
+type Keyer func(password, salt []byte) ([]byte, error)
 
-func Encrypt(password, plaintext string, key Keyer) (string, string, string, error) {
+func Encrypt(password, plaintext []byte, key Keyer) ([]byte, []byte, []byte, error) {
 	salt, err := randomBytes(saltByteSize)
 	if err != nil {
-		return "", "", "", err
+		return []byte{}, []byte{}, []byte{}, err
 	}
 
-	cipherKey, err := key(password, encoding.Encode(salt))
+	cipherKey, err := key(password, salt)
 	if err != nil {
-		return "", "", "", err
+		return []byte{}, []byte{}, []byte{}, err
 	}
 
 	block, err := aes.NewCipher(cipherKey)
 	if err != nil {
-		return "", "", "", err
+		return []byte{}, []byte{}, []byte{}, err
 	}
 
 	nonce := make([]byte, nonceSize)
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		return "", "", "", err
+		return []byte{}, []byte{}, []byte{}, err
 	}
 
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return "", "", "", err
+		return []byte{}, []byte{}, []byte{}, err
 	}
 
 	ciphertext := aesgcm.Seal(nil, nonce, []byte(plaintext), nil)
 
-	return encoding.Encode(ciphertext), encoding.Encode(salt), encoding.Encode(nonce), nil
+	return ciphertext, salt, nonce, nil
 }
 
 func randomBytes(x int) ([]byte, error) {

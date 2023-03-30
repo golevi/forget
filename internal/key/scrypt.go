@@ -1,7 +1,6 @@
 package key
 
 import (
-	"github.com/golevi/forget/internal/encoding"
 	"golang.org/x/crypto/scrypt"
 )
 
@@ -11,11 +10,6 @@ const (
 	scryptP = 1
 )
 
-func Scrypt(password, salt string) ([]byte, error) {
-	byteSalt, err := encoding.Decode(salt)
-	if err != nil {
-		return []byte{}, nil
-	}
-
-	return scrypt.Key([]byte(password), byteSalt, scryptN, scryptR, scryptP, keyLen)
+func Scrypt(password, salt []byte) ([]byte, error) {
+	return scrypt.Key(password, salt, scryptN, scryptR, scryptP, keyLen)
 }
