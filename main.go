@@ -21,14 +21,21 @@ func main() {
 	rand.Read(password)
 
 	// password := []byte("password")
-	encryptedText, salt, nonce, err := encryption.Encrypt(password, text, key.Argon)
+	cipher, err := encryption.Encrypt(password, text, key.Argon)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	fmt.Printf("Secret: %s\nCipher: %s\nNonce : %s\nSalt  : %s\n", encoding.Encode(password), encoding.Encode(encryptedText), encoding.Encode(nonce), encoding.Encode(salt))
+	fmt.Printf("Secret: %s\nCipher: %s\nNonce : %s\nSalt  : %s\n",
+		encoding.Encode(password),
+		encoding.Encode(cipher.Payload),
+		encoding.Encode(cipher.Nonce),
+		encoding.Encode(cipher.Salt),
+	)
 
-	plaintext, err := encryption.Decrypt(password, salt, nonce, encryptedText, key.Argon)
+	plaintext, err := encryption.Decrypt(
+		password, cipher, key.Argon,
+	)
 	if err != nil {
 		panic(err.Error())
 	}

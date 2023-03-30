@@ -5,8 +5,8 @@ import (
 	"crypto/cipher"
 )
 
-func Decrypt(password, salt, nonce, ciphertext []byte, key Keyer) ([]byte, error) {
-	cipherKey, err := key(password, salt)
+func Decrypt(password []byte, c Cipher, key Keyer) ([]byte, error) {
+	cipherKey, err := key(password, c.Salt)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -21,7 +21,7 @@ func Decrypt(password, salt, nonce, ciphertext []byte, key Keyer) ([]byte, error
 		return []byte{}, err
 	}
 
-	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
+	plaintext, err := aesgcm.Open(nil, c.Nonce, c.Payload, nil)
 	if err != nil {
 		return []byte{}, nil
 	}

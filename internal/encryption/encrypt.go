@@ -12,37 +12,39 @@ const (
 	nonceSize    = 12
 )
 
-type Keyer func(password, salt []byte) ([]byte, error)
-
-func Encrypt(password, plaintext []byte, key Keyer) ([]byte, []byte, []byte, error) {
+func Encrypt(password, plaintext []byte, key Keyer) (Cipher, error) {
 	salt, err := randomBytes(saltByteSize)
 	if err != nil {
-		return []byte{}, []byte{}, []byte{}, err
+		return Cipher{}, err
 	}
 
 	cipherKey, err := key(password, salt)
 	if err != nil {
-		return []byte{}, []byte{}, []byte{}, err
+		return Cipher{}, err
 	}
 
 	block, err := aes.NewCipher(cipherKey)
 	if err != nil {
-		return []byte{}, []byte{}, []byte{}, err
+		return Cipher{}, err
 	}
 
 	nonce := make([]byte, nonceSize)
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		return []byte{}, []byte{}, []byte{}, err
+		return Cipher{}, err
 	}
 
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return []byte{}, []byte{}, []byte{}, err
+		return Cipher{}, err
 	}
 
 	ciphertext := aesgcm.Seal(nil, nonce, []byte(plaintext), nil)
 
-	return ciphertext, salt, nonce, nil
+	return Cipher{
+		Payload: ciphertext,
+		Salt:    salt,
+		Nonce:   nonce,
+	}, nil
 }
 
 func randomBytes(x int) ([]byte, error) {
