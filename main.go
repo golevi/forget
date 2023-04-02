@@ -6,9 +6,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/golevi/forget/internal/encoding"
-	"github.com/golevi/forget/internal/encryption"
-	"github.com/golevi/forget/internal/key"
+	"github.com/golevi/forget/pkg/encoding"
+	"github.com/golevi/forget/pkg/encryption"
+	"github.com/golevi/forget/pkg/key"
 )
 
 // scrypt settings
